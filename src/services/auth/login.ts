@@ -83,7 +83,7 @@ export const login = async (
     if (!decodedToken || typeof decodedToken === "string") {
       throw new Error("Invalid token format");
     }
-
+    console.log(decodedToken);
     // const defaultDashboard = getDefaultDashboard(
     //     decodedToken.systemRole as SystemRole,
     //     decodedToken.role as CenterRole
@@ -92,7 +92,7 @@ export const login = async (
     return {
       success: true,
       message: "login success",
-      // redirectTo: defaultDashboard,
+      redirectTo: "/feed",
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
