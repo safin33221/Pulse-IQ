@@ -34,21 +34,18 @@ export function LoginForm() {
     }, [state.success, router]);
     return (
         <div className="w-full">
-            <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
+            <div className="rounded-none border-0 bg-transparent p-0 shadow-none sm:rounded-2xl sm:border sm:bg-card sm:p-8 sm:shadow-sm">
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold">
                         Welcome back
                     </h2>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Sign in to continue to Pulse IQ.
+                        Sign in to continue to InFera.
                     </p>
                 </div>
 
-                <form
-                    action={formAction}
-                    className="space-y-5"
-                >
+                <form action={formAction} className="space-y-5">
                     {/* Email */}
                     <div className="space-y-2">
                         <Label htmlFor="email">
@@ -130,9 +127,7 @@ export function LoginForm() {
                         className="h-11 w-full"
                         disabled={isPending}
                     >
-                        {isPending
-                            ? "Signing in..."
-                            : "Sign in"}
+                        {isPending ? "Signing in..." : "Sign in"}
                     </Button>
                 </form>
 

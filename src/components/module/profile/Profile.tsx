@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { useTheme } from "next-themes";
 
 import { IUser } from "@/types/user/user.type";
 import { Button } from "@/components/ui/button";
-
-type Theme = "light" | "dark" | "system";
+import { logout } from "@/services/auth/logout";
 
 type NotificationSetting = {
     title: string;
@@ -269,18 +269,30 @@ export default function Profile({ user }: { user: IUser }) {
                 </ProfileSection>
 
                 {/* Logout */}
-                <button
-                    type="button"
-                    className="mt-4 flex h-8 w-full items-center justify-center rounded-full border bg-card text-xs font-medium transition-colors hover:bg-muted hover:text-primary"
-                >
-                    Log out
-                </button>
+                <form action={logout} className="mt-4">
+                    <LogoutButton />
+                </form>
 
                 <p className="mt-2 text-center text-[10px] text-muted-foreground">
                     Pulse IQ · Version 1.0.0
                 </p>
             </div>
         </main>
+    );
+}
+
+function LogoutButton() {
+    const { pending } = useFormStatus();
+
+    return (
+        <Button
+            type="submit"
+            variant="outline"
+            disabled={pending}
+            className="h-9 w-full rounded-full text-xs font-medium"
+        >
+            {pending ? "Logging out..." : "Log out"}
+        </Button>
     );
 }
 
