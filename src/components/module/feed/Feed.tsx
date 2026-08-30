@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -5,20 +7,61 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Category } from "@/types/news/new.service.type";
 import type { NewsArticle } from "@/types/news/news.types";
+import type { IUser } from "@/types/user/user.type";
+import { Bookmark, Share2 } from "lucide-react";
 
-interface FeedHeroProps {
+interface FeedProps {
     news: NewsArticle[];
     categories: Category[];
     activeCategory?: string;
+    user: IUser | null;
 }
 
-export function FeedHero({
+function getDailyFeaturedIndex(stories: NewsArticle[]): number {
+    if (stories.length === 0) return 0;
+
+    const seed = `${new Date().toDateString()}:${stories.map((story) => story.id).join(":")}`;
+    let hash = 0;
+
+    for (const character of seed) {
+        hash = (hash * 31 + character.charCodeAt(0)) | 0;
+    }
+
+    return Math.abs(hash) % stories.length;
+}
+
+export function Feed({
     news,
     categories,
     activeCategory = "foryou",
-}: FeedHeroProps) {
-    const featuredStory = news[0];
-    const remainingStories = news.slice(1);
+    user,
+}: FeedProps) {
+    const currentTime = new Date();
+
+    const storiesWithImages = news.filter((story) => Boolean(story.imageUrl));
+
+    const featuredStory =
+        storiesWithImages[getDailyFeaturedIndex(storiesWithImages)] ??
+        news[0];
+
+    const remainingStories = featuredStory
+        ? news.filter((story) => story.id !== featuredStory.id)
+        : [];
+
+    const greeting = currentTime.getHours() < 12
+        ? "Good morning"
+        : currentTime.getHours() < 18
+            ? "Good afternoon"
+            : "Good evening";
+
+    const userName = user?.firstName ?? user?.username;
+
+    const formattedDate = new Intl.DateTimeFormat(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+        }).format(currentTime);
+
     const topics = [
         {
             value: "foryou",
@@ -29,20 +72,47 @@ export function FeedHero({
             label: category.name,
         })),
     ];
+    function formatRelativeTime(publishedAt: string | null): string {
+        if (!publishedAt) return "Recently";
+
+        const publishedDate = new Date(publishedAt);
+
+        if (Number.isNaN(publishedDate.getTime())) {
+            return "Recently";
+        }
+
+        const diffMs = currentTime.getTime() - publishedDate.getTime();
+        const diffMinutes = Math.max(0, Math.floor(diffMs / (1000 * 60)));
+
+        if (diffMinutes < 1) return "just now";
+        if (diffMinutes < 60) return `${diffMinutes}m ago`;
+
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 24) return `${diffHours}h ago`;
+
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays}d ago`;
+
+        return publishedDate.toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+        });
+    }
+
     return (
         <section className="w-full">
             {/* Header */}
             <div className="mb-8">
                 <p className="mb-2 text-sm font-medium uppercase tracking-[0.12em] text-muted-foreground sm:text-base">
-                    Monday, August 31
+                    {formattedDate}
                 </p>
 
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                    Good afternoon
+                    {greeting}{userName ? `, ${userName}` : ""}
                 </h1>
 
                 <p className="mt-3 text-base text-muted-foreground sm:text-xl">
-                    {news.length} stories across your topics
+                    {news.length} {news.length === 1 ? "story" : "stories"} in your feed
                 </p>
             </div>
 
@@ -105,10 +175,12 @@ export function FeedHero({
                     </div>
                 )}
 
+
                 {/* Featured Story */}
                 {featuredStory && (
-                    <article className="group relative overflow-hidden rounded-2xl border bg-card">
-                        <Link href={`/news/${featuredStory.id}`}>
+                    <article className="group overflow-hidden rounded-2xl border bg-card">
+                        <Link href={`/news/${featuredStory.id}`} className="block">
+                            {/* Image */}
                             <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[2/1]">
                                 {featuredStory.imageUrl ? (
                                     <Image
@@ -123,36 +195,79 @@ export function FeedHero({
                                     <div className="absolute inset-0 bg-muted" />
                                 )}
 
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                                <Badge className="absolute left-4 top-4 rounded-full border-0 px-4 py-1.5 text-xs font-bold uppercase tracking-wide">
-                                    ● Breaking
+                                {/* Breaking Badge */}
+                                <Badge
+                                    className="absolute left-3 top-3 rounded-full border-0 bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground sm:left-4 sm:top-4 sm:px-4 sm:py-1.5 sm:text-xs"
+                                >
+                                    <span className="mr-1">●</span>
+                                    Featured
                                 </Badge>
+                            </div>
 
-                                <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-7">
-                                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/70">
-                                        {featuredStory.category?.name ?? "News"}
+                            {/* Content */}
+                            <div className="px-4 py-4 sm:px-5 sm:py-5">
+                                {/* Category */}
+                                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">
+                                    {featuredStory.category?.name ?? "News"}
+                                </p>
+
+                                {/* Title */}
+                                <h3 className="max-w-4xl text-xl font-bold leading-tight tracking-tight sm:text-2xl lg:text-[28px]">
+                                    {featuredStory.title}
+                                </h3>
+
+                                {/* Summary */}
+                                {featuredStory.summary && (
+                                    <p className="mt-2 max-w-3xl text-sm leading-5 text-muted-foreground sm:text-[15px] sm:leading-6">
+                                        {featuredStory.summary}
                                     </p>
+                                )}
+                            </div>
 
-                                    <h3 className="max-w-3xl text-2xl font-bold leading-tight sm:text-4xl">
-                                        {featuredStory.title}
-                                    </h3>
+                            {/* Footer */}
+                            <div className="flex items-center justify-between border-t px-4 py-3 sm:px-5">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+                                    <span className="font-medium text-foreground">
+                                        {featuredStory.source?.name ?? "Unknown source"}
+                                    </span>
 
-                                    {featuredStory.summary && (
-                                        <p className="mt-3 hidden max-w-2xl text-sm leading-6 text-white/80 sm:block">
-                                            {featuredStory.summary}
-                                        </p>
-                                    )}
+                                    <span>·</span>
 
-                                    <div className="mt-4 flex items-center gap-3 text-sm text-white/70">
-                                        <span>
-                                            {featuredStory.source?.name ?? "Unknown source"}
-                                        </span>
+                                    <span>
+                                        {formatRelativeTime(featuredStory.publishedAt)}
+                                    </span>
 
-                                        <span>·</span>
+                                    <span>·</span>
 
-                                        <span>6 min read</span>
-                                    </div>
+                                    <span>6 min read</span>
+                                </div>
+
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                    {/* Share */}
+                                    <button
+                                        type="button"
+                                        aria-label="Share story"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }}
+                                        className="transition-colors hover:text-foreground"
+                                    >
+                                        <Share2 className="size-4" />
+                                    </button>
+
+                                    {/* Bookmark */}
+                                    <button
+                                        type="button"
+                                        aria-label="Save story"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }}
+                                        className="transition-colors hover:text-foreground"
+                                    >
+                                        <Bookmark className="size-4" />
+                                    </button>
                                 </div>
                             </div>
                         </Link>
