@@ -1,6 +1,8 @@
 import { FeedHero } from "@/components/module/feed/FeedHero";
 import { TrendingStories } from "@/components/module/feed/TrendingStories";
 import { YourTopics } from "@/components/module/feed/YourTopics";
+import { getCategories } from "@/services/news/category";
+
 import { getNewsFeed } from "@/services/news/getNewsFeed";
 
 interface FeedPageProps {
@@ -16,14 +18,21 @@ export default async function Page({
 
     const category = params.category ?? "foryou";
 
-    const feedResponse = await getNewsFeed({
-        category,
-        page: 1,
-        limit: 20,
-    });
+    const [feedResponse, categoryResponse] = await Promise.all([
+        getNewsFeed({
+            category,
+            page: 1,
+            limit: 20,
+        }),
+        getCategories(),
+    ]);
 
     const feedNews = Array.isArray(feedResponse?.data?.data)
         ? feedResponse.data.data
+        : [];
+
+    const categories = Array.isArray(categoryResponse?.data)
+        ? categoryResponse.data
         : [];
 
     return (
@@ -31,10 +40,11 @@ export default async function Page({
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
                 <FeedHero
                     news={feedNews}
+                    categories={categories}
                     activeCategory={category}
                 />
 
-                <aside className="hidden space-y-6 lg:block">
+                <aside className="sticky top-20 hidden max-h-[calc(100dvh-6rem)] self-start space-y-6 overflow-y-auto overscroll-contain pr-1 lg:block">
                     <TrendingStories />
 
                     <YourTopics />

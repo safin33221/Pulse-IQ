@@ -3,46 +3,32 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const topics = [
-    { label: "For you", value: "foryou" },
-    { label: "Technology", value: "technology" },
-    { label: "Business", value: "business" },
-    { label: "Science", value: "science" },
-    { label: "Climate", value: "climate" },
-    { label: "Politics", value: "politics" },
-    { label: "Health", value: "health" },
-    { label: "Culture", value: "culture" },
-    { label: "Sports", value: "sports" },
-];
-
-type NewsArticle = {
-    id: string;
-    title: string;
-    summary?: string | null;
-    imageUrl?: string | null;
-    publishedAt?: string | null;
-    category?: {
-        name: string;
-        slug: string;
-    } | null;
-    source?: {
-        name: string;
-    } | null;
-};
+import type { Category } from "@/types/news/new.service.type";
+import type { NewsArticle } from "@/types/news/news.types";
 
 interface FeedHeroProps {
     news: NewsArticle[];
+    categories: Category[];
     activeCategory?: string;
 }
 
 export function FeedHero({
     news,
+    categories,
     activeCategory = "foryou",
 }: FeedHeroProps) {
     const featuredStory = news[0];
     const remainingStories = news.slice(1);
-
+    const topics = [
+        {
+            value: "foryou",
+            label: "For you",
+        },
+        ...categories.map((category) => ({
+            value: category.slug,
+            label: category.name,
+        })),
+    ];
     return (
         <section className="w-full">
             {/* Header */}

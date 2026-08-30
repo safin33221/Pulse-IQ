@@ -29,3 +29,17 @@ export interface GetNewsFeedParams {
   page?: number;
   limit?: number;
 }
+
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface CategoriesResponse {
+  success: boolean;
+  statusCode: number;
+  data: Category[];
+  message?: string;
+}
