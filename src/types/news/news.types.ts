@@ -3,6 +3,7 @@ export interface NewsArticle {
   title: string;
   summary: string | null;
   content: string | null;
+  sourceUrl: string;
   imageUrl: string | null;
   publishedAt: string | null;
 

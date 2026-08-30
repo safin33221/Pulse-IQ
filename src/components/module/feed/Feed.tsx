@@ -179,7 +179,7 @@ export function Feed({
                 {/* Featured Story */}
                 {featuredStory && (
                     <article className="group overflow-hidden rounded-2xl border bg-card">
-                        <Link href={`/news/${featuredStory.id}`} className="block">
+                        <Link href={`/feed/${featuredStory.id}`} className="block">
                             {/* Image */}
                             <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[2/1]">
                                 {featuredStory.imageUrl ? (
@@ -279,7 +279,7 @@ export function Feed({
                     {remainingStories.map((story) => (
                         <Link
                             key={story.id}
-                            href={`/news/${story.id}`}
+                            href={`/feed/${story.id}`}
                             className="group flex gap-4 p-4 transition-colors hover:bg-muted/50"
                         >
                             <div className="min-w-0 flex-1">

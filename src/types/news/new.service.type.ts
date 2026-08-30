@@ -43,3 +43,9 @@ export interface CategoriesResponse {
   data: Category[];
   message?: string;
 }
+
+export interface NewsDetailsResponse {
+  success: boolean;
+  message?: string;
+  data: NewsArticle;
+}
