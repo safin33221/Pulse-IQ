@@ -24,6 +24,7 @@ export const login = async (
 
   const payload = {
     email: String(formData.get("email") || "").trim(),
+    
     password: String(formData.get("password") || ""),
   };
 
