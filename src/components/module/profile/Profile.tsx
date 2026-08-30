@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useTheme } from "next-themes";
 
 import { IUser } from "@/types/user/user.type";
+import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark" | "system";
 
@@ -202,7 +203,6 @@ export default function Profile({ user }: { user: IUser }) {
                         options={[
                             { label: "Light", value: "light" },
                             { label: "Dark", value: "dark" },
-                            { label: "System", value: "system" },
                         ]}
                         value={theme ?? "system"}
                         onChange={(value) => {
@@ -297,7 +297,7 @@ function ProfileSection({
 }) {
     return (
         <section className="mt-5">
-            <p className="mb-2 text-[9px] font-medium tracking-[0.12em] text-muted-foreground">
+            <p className="mb-2 text-[12px] font-medium tracking-[0.12em] text-muted-foreground">
                 {label}
             </p>
 
@@ -387,9 +387,10 @@ function SegmentedControl({
                 const active = option.value === value;
 
                 return (
-                    <button
+                    <Button
                         key={option.value}
                         type="button"
+                        variant={`secondary`}
                         onClick={() => onChange(option.value)}
                         className={[
                             "h-full flex-1 rounded-full text-[10px] font-medium transition-all",
@@ -399,7 +400,7 @@ function SegmentedControl({
                         ].join(" ")}
                     >
                         {option.label}
-                    </button>
+                    </Button>
                 );
             })}
         </div>

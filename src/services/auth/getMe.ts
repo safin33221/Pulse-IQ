@@ -1,7 +1,8 @@
 import { serverFetch } from "@/lib/api/server-fetch";
-import { CurrentUser, GetMeResponse } from "@/types/auth/auth.type";
+import { GetMeResponse } from "@/types/auth/auth.type";
+import { IUser } from "@/types/user/user.type";
 
-export async function getMe(): Promise<CurrentUser | null> {
+export async function getMe(): Promise<IUser | null> {
   try {
     const response = await serverFetch.get("/auth/me");
 
