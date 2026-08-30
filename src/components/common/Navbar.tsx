@@ -14,7 +14,7 @@ const navigation = [
     },
     {
         label: "Explore",
-        href: "/discover",
+        href: "/explore",
     },
     {
         label: "Saved",
