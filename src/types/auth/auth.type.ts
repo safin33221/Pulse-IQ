@@ -10,3 +10,17 @@ export interface LoginState {
 export const initialLoginState: LoginState = {
     success: false,
 };
+
+export type CurrentUser = {
+  id: string;
+  email: string;
+  name?: string;
+  role: string;
+  avatar?: string;
+};
+
+export type GetMeResponse = {
+  success: boolean;
+  message?: string;
+  data?: CurrentUser;
+};
