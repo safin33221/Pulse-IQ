@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import type { MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 import { useTheme } from "next-themes";
@@ -11,15 +11,11 @@ import { Button } from "@/components/ui/button";
 import { logout } from "@/services/auth/logout";
 import { Camera, Pencil, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { updateUser } from "@/services/user/updateUser";
 import SegmentedControl from "@/components/shared/SegmentedControl";
 import { Toggle } from "@/components/shared/Toggle";
+import { updateUser } from "@/services/user/updateUser";
 
-type NotificationSetting = {
-    title: string;
-    description: string;
-    enabled: boolean;
-};
+
 
 const suggestedTopics = [
     "Semiconductors",
@@ -31,9 +27,7 @@ const suggestedTopics = [
 export default function Profile({ user }: { user: IUser }) {
     const { theme, setTheme } = useTheme();
     const fullName =
-        [user.firstName, user.lastName]
-            .filter(Boolean)
-            .join(" ") ||
+        user.name ||
         user.username ||
         "Pulse IQ User";
 
@@ -50,54 +44,25 @@ export default function Profile({ user }: { user: IUser }) {
         setIsEditingName(false);
     };
 
-    const handleNameSave = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const trimmedName = name.trim();
-
-        if (!trimmedName || trimmedName === fullName) {
-            setIsEditingName(false);
-            return;
-        }
+    const handleNameSave = async () => {
+        setIsSavingName(true);
 
         try {
-            setIsSavingName(true);
+            const result = await updateUser({
+                name: name.trim(),
+            });
 
-            // const { } = useActionState(updateUser, trimmedName)
+            if (!result.success) {
+                return;
+            }
 
             setIsEditingName(false);
         } finally {
             setIsSavingName(false);
         }
     };
-    const [notifications, setNotifications] = useState<
-        NotificationSetting[]
-    >([
-        {
-            title: "Breaking news",
-            description: "Only for stories our editors flag as urgent.",
-            enabled: true,
-        },
-        {
-            title: "Daily brief",
-            description: "One summary each morning at 7:00.",
-            enabled: true,
-        },
-        {
-            title: "Topics you follow",
-            description: "New reporting on your followed topics.",
-            enabled: true,
-        },
-        {
-            title: "Sources you follow",
-            description: "Every story from sources you follow.",
-            enabled: false,
-        },
-    ]);
 
-    const [textSize, setTextSize] = useState<
-        "Small" | "Default" | "Large"
-    >("Large");
+
 
     const [aiSummary, setAiSummary] = useState(true);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -207,7 +172,7 @@ export default function Profile({ user }: { user: IUser }) {
                             ) : (
                                 <div className="flex items-center gap-1.5">
                                     <h1 className="truncate text-base font-semibold leading-5 tracking-tight">
-                                        {fullName}
+                                        {user.name}
                                     </h1>
 
                                     <button

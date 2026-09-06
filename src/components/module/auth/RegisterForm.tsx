@@ -46,13 +46,13 @@ export function RegisterForm() {
                 <div className="grid gap-5 sm:grid-cols-2">
                     {/* First Name */}
                     <div className="space-y-2">
-                        <Label htmlFor="firstName">
-                            First name
+                        <Label htmlFor="name">
+                            Full Name
                         </Label>
 
                         <Input
-                            id="firstName"
-                            name="firstName"
+                            id="name"
+                            name="name"
                             type="text"
                             placeholder="John"
                             autoComplete="given-name"
@@ -61,61 +61,17 @@ export function RegisterForm() {
                             required
                         />
 
-                        {state.errors?.firstName?.[0] && (
+                        {state.errors?.name?.[0] && (
                             <p className="text-xs text-destructive">
-                                {state.errors.firstName[0]}
+                                {state.errors.name[0]}
                             </p>
                         )}
                     </div>
 
-                    {/* Last Name */}
-                    <div className="space-y-2">
-                        <Label htmlFor="lastName">
-                            Last name
-                        </Label>
 
-                        <Input
-                            id="lastName"
-                            name="lastName"
-                            type="text"
-                            placeholder="Doe"
-                            autoComplete="family-name"
-                            className="h-11"
-                            disabled={isPending}
-                            required
-                        />
-
-                        {state.errors?.lastName?.[0] && (
-                            <p className="text-xs text-destructive">
-                                {state.errors.lastName[0]}
-                            </p>
-                        )}
-                    </div>
                 </div>
 
-                {/* Username */}
-                <div className="space-y-2">
-                    <Label htmlFor="username">
-                        Username
-                    </Label>
 
-                    <Input
-                        id="username"
-                        name="username"
-                        type="text"
-                        placeholder="johndoe"
-                        autoComplete="username"
-                        className="h-11"
-                        disabled={isPending}
-                        required
-                    />
-
-                    {state.errors?.username?.[0] && (
-                        <p className="text-xs text-destructive">
-                            {state.errors.username[0]}
-                        </p>
-                    )}
-                </div>
 
                 {/* Email */}
                 <div className="space-y-2">
