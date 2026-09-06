@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import SegmentedControl from "@/components/shared/SegmentedControl";
 import { Toggle } from "@/components/shared/Toggle";
 import { updateUser } from "@/services/user/updateUser";
+import { Textarea } from "@/components/ui/textarea";
 
 
 
@@ -135,7 +136,7 @@ export default function Profile({ user }: { user: IUser }) {
                                 onChange={(e) => setName(e.target.value)}
                                 autoFocus
                                 maxLength={50}
-                                className="h-8 min-w-0 flex-1 px-2 text-sm font-semibold sm:text-base"
+                                className="h-10 px-2 text-3xl font-semibold"
                             />
 
                             <Button
@@ -159,7 +160,7 @@ export default function Profile({ user }: { user: IUser }) {
                         </form>
                     ) : (
                         <div className="flex items-center gap-1.5">
-                            <h1 className="min-w-0 truncate text-base font-semibold leading-5  text-xl sm:leading-6">
+                            <h1 className="text-3xl font-semibold">
                                 {user.name}
                             </h1>
 
@@ -180,13 +181,13 @@ export default function Profile({ user }: { user: IUser }) {
                             onSubmit={handleBioSave}
                             className="mt-1.5 flex items-center gap-1.5"
                         >
-                            <Input
+                            <Textarea
                                 value={bio}
                                 onChange={(e) => setBio(e.target.value)}
                                 autoFocus
                                 maxLength={500}
                                 placeholder="Tell us about yourself..."
-                                className="h-8 min-w-0 flex-1 px-2 text-xs sm:text-sm"
+                                className="min-h-20  px-2 py-1.5 text-xl"
                             />
 
                             <Button
@@ -216,7 +217,8 @@ export default function Profile({ user }: { user: IUser }) {
                         <div className="mt-1.5 flex items-center gap-1.5">
                             <p
                                 className={[
-                                    "min-w-0 flex-1  text-xs leading-4  sm:text-sm sm:leading-5",
+                                    "min-w-0 flex-1 text-sm md:text-xl    ",
+                                    
                                     user.bio
                                         ? "text-muted-foreground"
                                         : "text-muted-foreground/60",
