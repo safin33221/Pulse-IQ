@@ -9,7 +9,7 @@ import { useTheme } from "next-themes";
 import { IUser } from "@/types/user/user.type";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/services/auth/logout";
-import { Camera, Pencil, X } from "lucide-react";
+import { Camera, Check, Pencil, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import SegmentedControl from "@/components/shared/SegmentedControl";
 import { Toggle } from "@/components/shared/Toggle";
@@ -34,6 +34,9 @@ export default function Profile({ user }: { user: IUser }) {
     const [isEditingName, setIsEditingName] = useState(false);
     const [name, setName] = useState(fullName);
     const [isSavingName, setIsSavingName] = useState(false);
+    const [isEditingBio, setIsEditingBio] = useState(false);
+    const [bio, setBio] = useState(user.bio ?? "");
+    const [isSavingBio, setIsSavingBio] = useState(false);
     const handleNameEdit = () => {
         setName(fullName);
         setIsEditingName(true);
@@ -76,7 +79,23 @@ export default function Profile({ user }: { user: IUser }) {
             .toUpperCase() || "AR";
 
 
+    const handleBioSave = async () => {
+        setIsSavingBio(true);
 
+        try {
+            const result = await updateUser({
+                bio: bio.trim(),
+            });
+
+            if (!result.success) {
+                return;
+            }
+
+            setIsEditingBio(false);
+        } finally {
+            setIsSavingBio(false);
+        }
+    };
     function handleAvatarEdit(event: MouseEvent<HTMLButtonElement>): void {
         event.preventDefault();
 
@@ -104,105 +123,139 @@ export default function Profile({ user }: { user: IUser }) {
             <div className="mx-auto w-full max-w-300">
 
 
-                {/* User Profile */}
-                <section className="border-b bg-card px-4 py-4 sm:rounded-xl sm:border sm:px-5">
-                    <div className="flex items-center gap-3.5">
-                        {/* Avatar */}
-                        <div className="relative size-12 shrink-0">
-                            <div className="size-12 overflow-hidden rounded-full bg-foreground text-sm font-semibold text-background ring-2 ring-background">
-                                {avatarPreview || user.avatar ? (
-                                    <Image
-                                        src={(avatarPreview || user.avatar) as string}
-                                        alt={fullName}
-                                        width={96}
-                                        height={96}
-                                        className="size-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="flex size-full items-center justify-center">
-                                        {initials}
-                                    </div>
-                                )}
-                            </div>
+                {/* User Info */}
+                <div className="min-w-0 flex-1">
+                    {isEditingName ? (
+                        <form
+                            onSubmit={handleNameSave}
+                            className="flex items-center gap-1.5"
+                        >
+                            <Input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                autoFocus
+                                maxLength={50}
+                                className="h-8 min-w-0 flex-1 px-2 text-sm font-semibold sm:text-base"
+                            />
+
+                            <Button
+                                type="submit"
+                                size="sm"
+                                className="h-8 shrink-0 px-2.5 text-xs"
+                                disabled={!name.trim() || isSavingName}
+                            >
+                                {isSavingName ? "Saving..." : "Save"}
+                            </Button>
 
                             <button
                                 type="button"
-                                aria-label="Change profile photo"
-                                onClick={handleAvatarEdit}
-                                className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-background bg-foreground text-background shadow-sm transition-colors hover:bg-foreground/80"
+                                onClick={handleNameCancel}
+                                disabled={isSavingName}
+                                className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                aria-label="Cancel name edit"
                             >
-                                <Camera className="size-2.5" />
+                                <X className="size-3.5 sm:size-4" />
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="flex items-center gap-1.5">
+                            <h1 className="min-w-0 truncate text-base font-semibold leading-5  text-xl sm:leading-6">
+                                {user.name}
+                            </h1>
+
+                            <button
+                                type="button"
+                                aria-label="Edit name"
+                                onClick={handleNameEdit}
+                                className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                            >
+                                <Pencil className="size-3 sm:size-3.5" />
                             </button>
                         </div>
+                    )}
 
-                        {/* User Info */}
-                        <div className="min-w-0 flex-1">
-                            {isEditingName ? (
-                                <form
-                                    onSubmit={handleNameSave}
-                                    className="flex items-center gap-1.5"
-                                >
-                                    <Input
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        autoFocus
-                                        maxLength={50}
-                                        className="h-8 min-w-0 flex-1 px-2 text-sm font-semibold"
-                                    />
+                    {/* Bio */}
+                    {isEditingBio ? (
+                        <form
+                            onSubmit={handleBioSave}
+                            className="mt-1.5 flex items-center gap-1.5"
+                        >
+                            <Input
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                autoFocus
+                                maxLength={500}
+                                placeholder="Tell us about yourself..."
+                                className="h-8 min-w-0 flex-1 px-2 text-xs sm:text-sm"
+                            />
 
-                                    <Button
-                                        type="submit"
-                                        size="sm"
-                                        className="h-8 shrink-0 px-2.5 text-xs"
-                                        disabled={!name.trim() || isSavingName}
-                                    >
-                                        {isSavingName ? "Saving..." : "Save"}
-                                    </Button>
+                            <Button
+                                type="submit"
+                                size="icon"
+                                disabled={isSavingBio}
+                                className="size-8 shrink-0"
+                                aria-label="Save bio"
+                            >
+                                <Check className="size-3.5 sm:size-4" />
+                            </Button>
 
-                                    <button
-                                        type="button"
-                                        onClick={handleNameCancel}
-                                        disabled={isSavingName}
-                                        className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                                        aria-label="Cancel name edit"
-                                    >
-                                        <X className="size-3.5" />
-                                    </button>
-                                </form>
-                            ) : (
-                                <div className="flex items-center gap-1.5">
-                                    <h1 className="truncate text-base font-semibold leading-5 tracking-tight">
-                                        {user.name}
-                                    </h1>
-
-                                    <button
-                                        type="button"
-                                        aria-label="Edit name"
-                                        onClick={handleNameEdit}
-                                        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                                    >
-                                        <Pencil className="size-3" />
-                                    </button>
-                                </div>
-                            )}
-
-                            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                                {user.email}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setBio(user.bio ?? "");
+                                    setIsEditingBio(false);
+                                }}
+                                disabled={isSavingBio}
+                                className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                aria-label="Cancel bio edit"
+                            >
+                                <X className="size-3.5 sm:size-4" />
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="mt-1.5 flex items-center gap-1.5">
+                            <p
+                                className={[
+                                    "min-w-0 flex-1  text-xs leading-4  sm:text-sm sm:leading-5",
+                                    user.bio
+                                        ? "text-muted-foreground"
+                                        : "text-muted-foreground/60",
+                                ].join(" ")}
+                            >
+                                {user.bio || "Tell us about yourself..."}
                             </p>
 
-                            <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                                <span>{user?.interests?.length} topics</span>
-
-                                <span
-                                    aria-hidden="true"
-                                    className="size-0.5 rounded-full bg-muted-foreground/50"
-                                />
-
-                                <span>27 read this week</span>
-                            </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setBio(user.bio ?? "");
+                                    setIsEditingBio(true);
+                                }}
+                                className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                aria-label="Edit bio"
+                            >
+                                <Pencil className="size-3 sm:size-3.5" />
+                            </button>
                         </div>
+                    )}
+
+                    {/* Email */}
+                    <p className="mt-1 truncate text-xs leading-4 text-muted-foreground sm:mt-1.5 sm:text-sm sm:leading-5">
+                        {user.email}
+                    </p>
+
+                    {/* Stats */}
+                    <div className="mt-1.5 flex items-center gap-2 text-[10px] leading-4 text-muted-foreground sm:mt-2 sm:text-[11px]">
+                        <span>{user?.interests?.length ?? 0} topics</span>
+
+                        <span
+                            aria-hidden="true"
+                            className="size-0.5 shrink-0 rounded-full bg-muted-foreground/50"
+                        />
+
+                        <span>27 read this week</span>
                     </div>
-                </section>
+                </div>
 
                 {/* Followed Topics */}
                 <ProfileSection label="FOLLOWED TOPICS">
