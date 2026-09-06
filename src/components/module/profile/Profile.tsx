@@ -1,13 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import type { MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 import { useTheme } from "next-themes";
 
 import { IUser } from "@/types/user/user.type";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/services/auth/logout";
+import { Camera, Pencil, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { updateUser } from "@/services/user/updateUser";
+import SegmentedControl from "@/components/shared/SegmentedControl";
+import { Toggle } from "@/components/shared/Toggle";
 
 type NotificationSetting = {
     title: string;
@@ -24,7 +30,46 @@ const suggestedTopics = [
 
 export default function Profile({ user }: { user: IUser }) {
     const { theme, setTheme } = useTheme();
+    const fullName =
+        [user.firstName, user.lastName]
+            .filter(Boolean)
+            .join(" ") ||
+        user.username ||
+        "Pulse IQ User";
 
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [name, setName] = useState(fullName);
+    const [isSavingName, setIsSavingName] = useState(false);
+    const handleNameEdit = () => {
+        setName(fullName);
+        setIsEditingName(true);
+    };
+
+    const handleNameCancel = () => {
+        setName(fullName);
+        setIsEditingName(false);
+    };
+
+    const handleNameSave = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        const trimmedName = name.trim();
+
+        if (!trimmedName || trimmedName === fullName) {
+            setIsEditingName(false);
+            return;
+        }
+
+        try {
+            setIsSavingName(true);
+
+            // const { } = useActionState(updateUser, trimmedName)
+
+            setIsEditingName(false);
+        } finally {
+            setIsSavingName(false);
+        }
+    };
     const [notifications, setNotifications] = useState<
         NotificationSetting[]
     >([
@@ -55,13 +100,7 @@ export default function Profile({ user }: { user: IUser }) {
     >("Large");
 
     const [aiSummary, setAiSummary] = useState(true);
-
-    const fullName =
-        [user.firstName, user.lastName]
-            .filter(Boolean)
-            .join(" ") ||
-        user.username ||
-        "Pulse IQ User";
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const initials =
         [user.firstName, user.lastName]
@@ -71,52 +110,131 @@ export default function Profile({ user }: { user: IUser }) {
             .slice(0, 2)
             .toUpperCase() || "AR";
 
-    const toggleNotification = (index: number) => {
-        setNotifications((current) =>
-            current.map((notification, i) =>
-                i === index
-                    ? {
-                        ...notification,
-                        enabled: !notification.enabled,
-                    }
-                    : notification,
-            ),
-        );
-    };
+
+
+    function handleAvatarEdit(event: MouseEvent<HTMLButtonElement>): void {
+        event.preventDefault();
+
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        input.onchange = () => {
+            const file = input.files?.[0];
+
+            if (!file) return;
+
+            const previewUrl = URL.createObjectURL(file);
+            setAvatarPreview((previousUrl) => {
+                if (previousUrl) URL.revokeObjectURL(previousUrl);
+                return previewUrl;
+            });
+        };
+
+        input.click();
+    }
 
     return (
         <main className="min-h-screen bg-background px-4 py-6 text-foreground sm:px-6">
             <div className="mx-auto w-full max-w-300">
 
-                {/* User */}
-                <section className="rounded-lg border bg-card px-3 py-3">
-                    <div className="flex items-center gap-3">
-                        <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-foreground text-xs font-semibold text-background">
-                            {user.avatar ? (
-                                <Image
-                                    src={user.avatar}
-                                    alt={fullName}
-                                    width={100}
-                                    height={100}
-                                    className="size-full object-cover"
-                                />
-                            ) : (
-                                initials
-                            )}
+
+                {/* User Profile */}
+                <section className="border-b bg-card px-4 py-4 sm:rounded-xl sm:border sm:px-5">
+                    <div className="flex items-center gap-3.5">
+                        {/* Avatar */}
+                        <div className="relative size-12 shrink-0">
+                            <div className="size-12 overflow-hidden rounded-full bg-foreground text-sm font-semibold text-background ring-2 ring-background">
+                                {avatarPreview || user.avatar ? (
+                                    <Image
+                                        src={(avatarPreview || user.avatar) as string}
+                                        alt={fullName}
+                                        width={96}
+                                        height={96}
+                                        className="size-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex size-full items-center justify-center">
+                                        {initials}
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                aria-label="Change profile photo"
+                                onClick={handleAvatarEdit}
+                                className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border-2 border-background bg-foreground text-background shadow-sm transition-colors hover:bg-foreground/80"
+                            >
+                                <Camera className="size-2.5" />
+                            </button>
                         </div>
 
-                        <div className="min-w-0">
-                            <h1 className="truncate text-2xl font-semibold leading-tight">
-                                {fullName}
-                            </h1>
+                        {/* User Info */}
+                        <div className="min-w-0 flex-1">
+                            {isEditingName ? (
+                                <form
+                                    onSubmit={handleNameSave}
+                                    className="flex items-center gap-1.5"
+                                >
+                                    <Input
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        autoFocus
+                                        maxLength={50}
+                                        className="h-8 min-w-0 flex-1 px-2 text-sm font-semibold"
+                                    />
 
-                            <p className="truncate text-xl text-muted-foreground">
+                                    <Button
+                                        type="submit"
+                                        size="sm"
+                                        className="h-8 shrink-0 px-2.5 text-xs"
+                                        disabled={!name.trim() || isSavingName}
+                                    >
+                                        {isSavingName ? "Saving..." : "Save"}
+                                    </Button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleNameCancel}
+                                        disabled={isSavingName}
+                                        className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                        aria-label="Cancel name edit"
+                                    >
+                                        <X className="size-3.5" />
+                                    </button>
+                                </form>
+                            ) : (
+                                <div className="flex items-center gap-1.5">
+                                    <h1 className="truncate text-base font-semibold leading-5 tracking-tight">
+                                        {fullName}
+                                    </h1>
+
+                                    <button
+                                        type="button"
+                                        aria-label="Edit name"
+                                        onClick={handleNameEdit}
+                                        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                        <Pencil className="size-3" />
+                                    </button>
+                                </div>
+                            )}
+
+                            <p className="mt-0.5 truncate text-xs text-muted-foreground">
                                 {user.email}
                             </p>
 
-                            <p className="mt-0.5 text-[10px] text-muted-foreground">
-                                {user.interests.length} topics · 27 read this week
-                            </p>
+                            <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                                <span>{user?.interests?.length} topics</span>
+
+                                <span
+                                    aria-hidden="true"
+                                    className="size-0.5 rounded-full bg-muted-foreground/50"
+                                />
+
+                                <span>27 read this week</span>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -137,7 +255,7 @@ export default function Profile({ user }: { user: IUser }) {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5">
-                        {user.interests.slice(0, 3).map((topic) => (
+                        {user.interests?.slice(0, 3).map((topic) => (
                             <TopicBadge
                                 key={topic}
                                 variant="active"
@@ -163,39 +281,7 @@ export default function Profile({ user }: { user: IUser }) {
                     </div>
                 </ProfileSection>
 
-                {/* Notifications */}
-                <ProfileSection label="NOTIFICATIONS">
-                    <div className="overflow-hidden rounded-lg border bg-card">
-                        {notifications.map((notification, index) => (
-                            <div
-                                key={notification.title}
-                                className={[
-                                    "flex items-center justify-between gap-4 px-3 py-2.5",
-                                    index !== 0 && "border-t",
-                                ]
-                                    .filter(Boolean)
-                                    .join(" ")}
-                            >
-                                <div className="min-w-0">
-                                    <p className="text-xl font-medium">
-                                        {notification.title}
-                                    </p>
 
-                                    <p className="mt-0.5 truncate text-[14px] text-muted-foreground">
-                                        {notification.description}
-                                    </p>
-                                </div>
-
-                                <Toggle
-                                    enabled={notification.enabled}
-                                    onClick={() =>
-                                        toggleNotification(index)
-                                    }
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </ProfileSection>
 
                 {/* Appearance */}
                 <ProfileSection label="APPEARANCE">
@@ -214,37 +300,6 @@ export default function Profile({ user }: { user: IUser }) {
                 {/* Reading */}
                 <ProfileSection label="READING">
                     <div className="rounded-lg border bg-card px-3 py-3">
-                        <p className="mb-2 text-[10px] text-muted-foreground">
-                            Article text size
-                        </p>
-
-                        <SegmentedControl
-                            options={[
-                                {
-                                    label: "Small",
-                                    value: "Small",
-                                },
-                                {
-                                    label: "Default",
-                                    value: "Default",
-                                },
-                                {
-                                    label: "Large",
-                                    value: "Large",
-                                },
-                            ]}
-                            value={textSize}
-                            onChange={(value) =>
-                                setTextSize(
-                                    value as
-                                    | "Small"
-                                    | "Default"
-                                    | "Large",
-                                )
-                            }
-                        />
-
-                        <div className="my-3 border-t" />
 
                         <div className="flex items-center justify-between gap-4">
                             <div className="min-w-0">
@@ -347,74 +402,10 @@ function TopicBadge({
 /* Toggle                                                                     */
 /* ========================================================================== */
 
-function Toggle({
-    enabled,
-    onClick,
-}: {
-    enabled: boolean;
-    onClick: () => void;
-}) {
-    return (
-        <button
-            type="button"
-            role="switch"
-            aria-checked={enabled}
-            onClick={onClick}
-            className={[
-                "relative h-4 w-7 shrink-0 rounded-full transition-colors",
-                enabled ? "bg-primary" : "bg-muted",
-            ].join(" ")}
-        >
-            <span
-                className={[
-                    "absolute top-0.5 size-3 rounded-full bg-background shadow-sm transition-transform",
-                    enabled
-                        ? "translate-x-3.5"
-                        : "translate-x-0.5",
-                ].join(" ")}
-            />
-        </button>
-    );
-}
+
 
 /* ========================================================================== */
 /* Segmented Control                                                          */
 /* ========================================================================== */
 
-function SegmentedControl({
-    options,
-    value,
-    onChange,
-}: {
-    options: {
-        label: string;
-        value: string;
-    }[];
-    value: string;
-    onChange: (value: string) => void;
-}) {
-    return (
-        <div className="flex h-7 w-full items-center rounded-full border bg-muted/50 p-0.5">
-            {options.map((option) => {
-                const active = option.value === value;
 
-                return (
-                    <Button
-                        key={option.value}
-                        type="button"
-                        variant={`secondary`}
-                        onClick={() => onChange(option.value)}
-                        className={[
-                            "h-full flex-1 rounded-full text-[10px] font-medium transition-all",
-                            active
-                                ? "bg-card text-foreground shadow-sm"
-                                : "text-muted-foreground hover:text-foreground",
-                        ].join(" ")}
-                    >
-                        {option.label}
-                    </Button>
-                );
-            })}
-        </div>
-    );
-}

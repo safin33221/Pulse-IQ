@@ -24,9 +24,10 @@ export const login = async (
 
   const payload = {
     email: String(formData.get("email") || "").trim(),
-    
+
     password: String(formData.get("password") || ""),
   };
+  console.log({ payload });
 
   try {
     const res = await serverFetch.post("/auth/login", {

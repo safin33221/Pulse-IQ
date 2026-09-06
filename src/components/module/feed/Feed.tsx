@@ -57,10 +57,10 @@ export function Feed({
     const userName = user?.firstName ?? user?.username;
 
     const formattedDate = new Intl.DateTimeFormat(undefined, {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-        }).format(currentTime);
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+    }).format(currentTime);
 
     const topics = [
         {
@@ -107,7 +107,7 @@ export function Feed({
                     {formattedDate}
                 </p>
 
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+                <h1 className="text-2xl font-bold tracking-tight sm:text-5xl">
                     {greeting}{userName ? `, ${userName}` : ""}
                 </h1>
 
@@ -117,38 +117,40 @@ export function Feed({
             </div>
 
             {/* Topics */}
-            <div className="mb-8 overflow-x-auto scrollbar-none">
-                <div className="flex w-max gap-2">
-                    {topics.map((topic) => {
-                        const active = activeCategory === topic.value;
+            <div className="sticky top-14 z-50 mb-8 bg-background/95 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                <div className="overflow-x-auto scrollbar-none">
+                    <div className="flex w-max gap-2">
+                        {topics.map((topic) => {
+                            const active = activeCategory === topic.value;
 
-                        return (
-                            <Button
-                                key={topic.value}
-                                asChild
-                                variant={active ? "default" : "outline"}
-                                className={
-                                    active
-                                        ? "rounded-full px-5"
-                                        : "rounded-full bg-background px-5"
-                                }
-                            >
-                                <Link
-                                    href={
-                                        topic.value === "foryou"
-                                            ? "/feed"
-                                            : `/feed?category=${topic.value}`
+                            return (
+                                <Button
+                                    key={topic.value}
+                                    asChild
+                                    variant={active ? "default" : "outline"}
+                                    className={
+                                        active
+                                            ? "rounded-full px-5"
+                                            : "rounded-full bg-background px-5"
                                     }
                                 >
-                                    {topic.label}
-                                </Link>
-                            </Button>
-                        );
-                    })}
+                                    <Link
+                                        href={
+                                            topic.value === "foryou"
+                                                ? "/feed"
+                                                : `/feed?category=${topic.value}`
+                                        }
+                                    >
+                                        {topic.label}
+                                    </Link>
+                                </Button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
-            {/* Top Stories */}
+            {/* Top News */}
             <div>
                 <div className="mb-5">
                     <h2 className="text-2xl font-semibold tracking-tight">
