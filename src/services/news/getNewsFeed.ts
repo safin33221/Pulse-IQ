@@ -10,12 +10,12 @@ export async function getNewsFeed(
   const searchParams = new URLSearchParams();
 
   searchParams.set("category", params.category ?? "foryou");
-
   searchParams.set("page", String(params.page ?? 1));
-
   searchParams.set("limit", String(params.limit ?? 20));
 
-  const res = await serverFetch.get(`/news/feed?${searchParams.toString()}`);
+  const res = await serverFetch.get(`/news/feed?${searchParams.toString()}`, {
+    cache: "no-store",
+  });
 
   const result = (await res.json()) as NewsFeedResponse;
 
