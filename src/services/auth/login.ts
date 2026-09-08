@@ -6,7 +6,6 @@ import { unstable_rethrow } from "next/navigation";
 import { serverFetch } from "@/lib/api/server-fetch";
 import { getDefaultCookieOptions } from "@/lib/auth/cookie-options";
 import { setCookie } from "@/lib/auth/tokenHandler";
-import { parseCookie } from "cookie";
 import { LoginState } from "@/types/auth/auth.type";
 
 type LoginResponse = {
@@ -16,95 +15,111 @@ type LoginResponse = {
   redirectTo?: string;
 };
 
+const COOKIE_NAMES = {
+  ACCESS_TOKEN: "access_token",
+  REFRESH_TOKEN: "refresh_token",
+} as const;
+
 export const login = async (
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginResponse> => {
-  let accessToken: string | null = null;
+  const email = String(formData.get("email") || "").trim();
+  const password = String(formData.get("password") || "");
 
-  const payload = {
-    email: String(formData.get("email") || "").trim(),
-
-    password: String(formData.get("password") || ""),
-  };
-  console.log({ payload });
+  if (!email || !password) {
+    return {
+      success: false,
+      message: "Email or Password required",
+    };
+  }
 
   try {
-    const res = await serverFetch.post("/auth/login", {
+    const response = await serverFetch.post("/auth/login", {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        email,
+        password,
+      }),
     });
 
-    const result = await res.json();
+    const result = await response.json();
 
-    if (!res.ok) {
+    if (!response.ok) {
       return {
         success: false,
         message: result?.message || "Failed to login account",
       };
     }
 
-    const setCookieHeaders = res.headers.getSetCookie();
+    const setCookieHeaders = response.headers.getSetCookie();
 
-    if (!setCookieHeaders?.length) {
+    if (!setCookieHeaders.length) {
       throw new Error("No cookies received from backend");
     }
 
-    const allowedCookies = new Set(["access_token", "refresh_token"]);
+    let accessToken: string | null = null;
 
-    for (const cookieString of setCookieHeaders) {
-      const parsed = parseCookie(cookieString);
+    for (const cookie of setCookieHeaders) {
+      const [nameValue] = cookie.split(";");
 
-      console.log(parsed);
+      const separatorIndex = nameValue.indexOf("=");
 
-      for (const [name, value] of Object.entries(parsed)) {
-        if (!allowedCookies.has(name) || !value) {
-          continue;
-        }
-
-        if (name === "access_token") {
-          accessToken = value;
-        }
-
-        await setCookie(name, value, {
-          ...getDefaultCookieOptions(),
-          maxAge:
-            Number(parsed["Max-Age"]) ||
-            (name === "access_token" ? 900 : 604800),
-        });
+      if (separatorIndex === -1) {
+        continue;
       }
+
+      const name = nameValue.slice(0, separatorIndex).trim();
+      const value = nameValue.slice(separatorIndex + 1).trim();
+
+      if (
+        name !== COOKIE_NAMES.ACCESS_TOKEN &&
+        name !== COOKIE_NAMES.REFRESH_TOKEN
+      ) {
+        continue;
+      }
+
+      if (!value) {
+        continue;
+      }
+
+      if (name === COOKIE_NAMES.ACCESS_TOKEN) {
+        accessToken = value;
+      }
+
+      await setCookie(name, value, {
+        ...getDefaultCookieOptions(),
+        maxAge: name === COOKIE_NAMES.ACCESS_TOKEN ? 900 : 604800,
+      });
     }
 
     if (!accessToken) {
       throw new Error("Access token missing after login");
     }
+
     const decodedToken = jwt.decode(accessToken) as JwtPayload | null;
 
-    if (!decodedToken || typeof decodedToken === "string") {
+    if (!decodedToken) {
       throw new Error("Invalid token format");
     }
+
     console.log(decodedToken);
-    // const defaultDashboard = getDefaultDashboard(
-    //     decodedToken.systemRole as SystemRole,
-    //     decodedToken.role as CenterRole
-    // );
 
     return {
       success: true,
-      message: "login success",
+      message: "Login success",
       redirectTo: "/feed",
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     unstable_rethrow(error);
 
     console.error(error);
 
     return {
       success: false,
-      message: error?.message || "Login failed",
+      message: error instanceof Error ? error.message : "Login failed",
     };
   }
 };
