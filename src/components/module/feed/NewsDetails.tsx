@@ -52,15 +52,14 @@ export function NewsDetails({ news }: NewsDetailsProps) {
                     </div>
                 </header>
 
-                <div className="relative mt-7 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
-                    {news.imageUrl ? (
+                {news.imageUrl && (
+                    <div className="relative mt-7 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
+
                         <Image src={news.imageUrl} alt={news.title} fill priority sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
-                    ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                            No image available
-                        </div>
-                    )}
-                </div>
+
+                    </div>
+                )}
+
 
                 {articleContent ? (
                     <div
