@@ -25,20 +25,11 @@ const navigation = [
 export function Navbar({ user }: { user: IUser }) {
     const pathname = usePathname();
 
-    const fullName =
-        [user.firstName, user.lastName]
-            .filter(Boolean)
-            .join(" ") ||
+    const fullName = user.name ||
         user.username ||
         "Pulse IQ User";
 
-    const initials =
-        [user.firstName, user.lastName]
-            .filter((name): name is string => Boolean(name))
-            .map((name) => name[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase() || "U";
+    const initials = user.name?.toUpperCase()[0]
 
     return (
         <header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur">

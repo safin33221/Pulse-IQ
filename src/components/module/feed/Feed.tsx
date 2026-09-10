@@ -54,7 +54,7 @@ export function Feed({
             ? "Good afternoon"
             : "Good evening";
 
-    const userName = user?.firstName ?? user?.username;
+    const userName =  user?.username;
 
     const formattedDate = new Intl.DateTimeFormat(undefined, {
         weekday: "long",
