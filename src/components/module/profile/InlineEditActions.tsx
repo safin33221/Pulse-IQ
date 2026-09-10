@@ -1,0 +1,3 @@
+import { Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+export function InlineEditActions({ isSaving, onCancel, onSave }: { isSaving: boolean; onCancel: () => void; onSave?: () => void }) { return <div className="flex shrink-0 gap-1"><Button type={onSave ? "button" : "submit"} onClick={onSave} size="icon" disabled={isSaving} className="size-8" aria-label="Save"><Check className="size-4" /></Button><button type="button" onClick={onCancel} disabled={isSaving} className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="Cancel"><X className="size-4" /></button></div>; }

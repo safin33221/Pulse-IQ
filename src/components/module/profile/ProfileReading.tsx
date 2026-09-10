@@ -1,0 +1,3 @@
+import { ProfileSection } from "@/components/module/profile/ProfileSection";
+import { Toggle } from "@/components/shared/Toggle";
+export function ProfileReading({ enabled, onChange }: { enabled: boolean; onChange: (enabled: boolean) => void }) { return <ProfileSection label="READING"><div className="rounded-lg border bg-card px-3 py-3"><div className="flex items-center justify-between gap-4"><div><p className="text-xs font-medium">Show AI summaries first</p><p className="mt-0.5 text-[10px] text-muted-foreground">Open every article with the Quick Summary expanded.</p></div><Toggle enabled={enabled} onClick={() => onChange(!enabled)} /></div></div></ProfileSection>; }

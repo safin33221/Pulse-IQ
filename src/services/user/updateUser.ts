@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 
 import { serverFetch } from "@/lib/api/server-fetch";
-import { IUser, UpdateUserInput } from "@/types/user/user.type";
+import { IUser, UpdateMyProfileDto } from "@/types/user/user.type";
 
-type UpdateUserResult =
+type UpdateMyProfileResult =
   | {
       success: true;
       data: IUser;
@@ -15,9 +15,9 @@ type UpdateUserResult =
       message: string;
     };
 
-export async function updateUser(
-  input: UpdateUserInput,
-): Promise<UpdateUserResult> {
+export async function updateMyProfile(
+  input: UpdateMyProfileDto,
+): Promise<UpdateMyProfileResult> {
   try {
     console.log(input);
     const response = await serverFetch.patch("/users/me", {
