@@ -69,7 +69,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
 
-  /* Pulse IQ Brand */
+  /* INFERA Brand */
   --primary: oklch(0.53 0.17 36);
   --primary-foreground: oklch(1 0 0);
 
@@ -87,7 +87,7 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
 
-  /* Pulse IQ focus ring */
+  /* INFERA focus ring */
   --ring: oklch(0.53 0.17 36);
 
   --chart-1: oklch(0.53 0.17 36);
@@ -122,7 +122,7 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
 
-  /* Brighter Pulse IQ brand for dark mode */
+  /* Brighter INFERA brand for dark mode */
   --primary: oklch(0.64 0.18 36);
   --primary-foreground: oklch(0.15 0.02 36);
 

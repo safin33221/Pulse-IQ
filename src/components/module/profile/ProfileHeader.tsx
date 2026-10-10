@@ -7,7 +7,7 @@ import { useInlineEdit } from "@/hooks/use-inline-edit";
 import { UpdateMyProfileDto, IUser } from "@/types/user/user.type";
 
 export function ProfileHeader({ user, onSave }: { user: IUser; onSave: (payload: UpdateMyProfileDto) => Promise<boolean> }) {
-  const fullName = user.name || user.username || "Pulse IQ User";
+  const fullName = user.name || user.username || "INFERA User";
   const name = useInlineEdit({ value: fullName, onSave: (value) => onSave({ name: value.trim() }) });
   const bio = useInlineEdit({ value: user.bio ?? "", onSave: (value) => onSave({ bio: value.trim() }) });
   const submit = (event: FormEvent, save: () => Promise<void>) => { event.preventDefault(); void save(); };

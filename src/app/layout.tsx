@@ -19,12 +19,12 @@ const robotoHeading = Roboto({
 
 export const metadata: Metadata = {
   title: {
-    default: "Pulse IQ",
-    template: "%s | Pulse IQ",
+    default: "INFERA",
+    template: "%s | INFERA",
   },
   description:
-    "Pulse IQ helps you discover, understand, and keep up with the stories that matter.",
-  applicationName: "Pulse IQ",
+    "INFERA helps you discover, understand, and keep up with the stories that matter.",
+  applicationName: "INFERA",
   keywords: [
     "news",
     "technology news",
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     "business news",
     "personalized news",
   ],
-  authors: [{ name: "Pulse IQ" }],
-  creator: "Pulse IQ",
+  authors: [{ name: "INFERA" }],
+  creator: "INFERA",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "https://pulse-iq-kohl.vercel.app/",
   ),

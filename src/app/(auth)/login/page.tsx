@@ -1,6 +1,7 @@
 import Link from "next/link";
-
+import logo from "../../../../public/icons/Logo.png"
 import { LoginForm } from "@/components/module/auth/LoginForm";
+import Image from "next/image";
 
 export default function LoginPage() {
   return (
@@ -11,17 +12,27 @@ export default function LoginPage() {
           <div className="mx-auto flex w-full max-w-xl flex-col justify-center px-12 xl:px-20">
             {/* Logo */}
             <Link
-              href="/"
-              className="mb-12 flex w-fit items-center gap-2"
-            >
-              <span className="flex size-9 items-center justify-center rounded-lg bg-foreground">
-                <span className="size-2 rounded-full bg-primary" />
-              </span>
+                        href="/eed"
+                        className="flex items-center gap-2.5"
+                        aria-label="Infera Home"
+                    >
+                        <Image
+                            src={logo}
+                            alt="Infera Logo"
+                            width={42}
+                            height={42}
+                            priority
+                            quality={100}
+                            className="h-16 w-16 object-contain"
+                        />
 
-              <span className="text-2xl font-bold tracking-tight">
-                Pulse<span className="text-primary">IQ</span>
-              </span>
-            </Link>
+                        <span
+                            className="text-[20px] font-semibold tracking-[-0.04em]"
+                            style={{ color: '#8B1E24' }}
+                        >
+                            INFERA
+                        </span>
+                    </Link>
 
             {/* Hero Content */}
             <div>
@@ -38,7 +49,7 @@ export default function LoginPage() {
               </h1>
 
               <p className="mt-6 max-w-md text-base leading-7 text-muted-foreground">
-                Pulse IQ brings the stories that matter to you into one
+                INFERA brings the stories that matter to you into one
                 intelligent feed, helping you understand what is happening
                 without the noise.
               </p>
@@ -115,7 +126,7 @@ export default function LoginPage() {
 
             {/* Static Legal Content */}
             <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">
-              By continuing, you agree to Pulse IQ&apos;s{" "}
+              By continuing, you agree to INFERA&apos;s{" "}
               <Link
                 href="/terms"
                 className="underline underline-offset-2 hover:text-foreground"

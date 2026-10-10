@@ -45,7 +45,7 @@ export default function NotFound() {
                         className="inline-flex h-10 items-center justify-center gap-2 rounded-full border bg-card px-6 text-sm font-medium transition-colors hover:bg-muted"
                     >
                         <Search className="size-4" />
-                        Explore Pulse IQ
+                        Explore INFERA
                     </Link>
                 </div>
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-
+import logo from '../../../public/icons/Logo.png';
 import { IUser } from "@/types/user/user.type";
 
 const navigation = [
@@ -27,7 +27,7 @@ export function Navbar({ user }: { user: IUser }) {
 
     const fullName = user.name ||
         user.username ||
-        "Pulse IQ User";
+        "INFERA User";
 
     const initials = user.name?.toUpperCase()[0]
 
@@ -39,15 +39,24 @@ export function Navbar({ user }: { user: IUser }) {
                 <div className="flex h-full items-center gap-6">
                     <Link
                         href="/feed"
-                        className="flex items-center gap-2"
-                        aria-label="Pulse IQ Home"
+                        className="flex items-center gap-2.5"
+                        aria-label="Infera Home"
                     >
-                        <span className="flex size-6 items-center justify-center rounded-[6px] bg-foreground">
-                            <span className="size-1.5 rounded-full bg-primary" />
-                        </span>
+                        <Image
+                            src={logo}
+                            alt="Infera Logo"
+                            width={42}
+                            height={42}
+                            priority
+                            quality={100}
+                            className="h-16 w-16 object-contain"
+                        />
 
-                        <span className="text-[20px] font-semibold tracking-[-0.04em]">
-                            Pulse<span className="text-primary">IQ</span>
+                        <span
+                            className="text-[20px] font-semibold tracking-[-0.04em]"
+                            style={{ color: '#8B1E24' }}
+                        >
+                            INFERA
                         </span>
                     </Link>
 

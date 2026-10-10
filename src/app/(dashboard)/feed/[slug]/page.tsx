@@ -18,6 +18,7 @@ export default async function Page({
 
     try {
         response = await getNewsBySlug(slug);
+        console.log(response)
     } catch {
         notFound();
     }

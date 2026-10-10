@@ -28,6 +28,6 @@ export default function Profile({ user }: { user: IUser }) {
         <ProfileAppearance theme={theme ?? "system"} onThemeChange={setTheme} />
         <ProfileReading enabled={aiSummary} onChange={setAiSummary} />
         <form action={logout} className="mt-4"><Button type="submit" variant="outline" className="h-9 w-full rounded-full text-xs font-medium">Log out</Button></form>
-        <p className="mt-2 text-center text-[10px] text-muted-foreground">Pulse IQ · Version 1.0.0</p>
+        <p className="mt-2 text-center text-[10px] text-muted-foreground">INFERA · Version 1.0.0</p>
     </div></main>;
 }
