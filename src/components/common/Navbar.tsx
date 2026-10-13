@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from '../../../public/icons/Logo.png';
 import { IUser } from "@/types/user/user.type";
+import Logo from "./Logo";
 
 const navigation = [
     {
@@ -37,28 +38,9 @@ export function Navbar({ user }: { user: IUser }) {
 
                 {/* Logo + Navigation */}
                 <div className="flex h-full items-center gap-6">
-                    <Link
-                        href="/feed"
-                        className="flex items-center gap-2.5"
-                        aria-label="Infera Home"
-                    >
-                        <Image
-                            src={logo}
-                            alt="Infera Logo"
-                            width={42}
-                            height={42}
-                            priority
-                            quality={100}
-                            className="h-16 w-16 object-contain"
-                        />
-
-                        <span
-                            className="text-[20px] font-semibold tracking-[-0.04em]"
-                            style={{ color: '#8B1E24' }}
-                        >
-                            INFERA
-                        </span>
-                    </Link>
+                    <Logo 
+                    
+                    width={60}/>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden items-center gap-1 md:flex">

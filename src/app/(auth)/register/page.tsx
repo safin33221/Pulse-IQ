@@ -2,6 +2,7 @@ import Link from "next/link";
 import logo from "../../../../public/icons/Logo.png"
 import { RegisterForm } from "@/components/module/auth/RegisterForm";
 import Image from "next/image";
+import Logo from "@/components/common/Logo";
 
 export default function RegisterPage() {
     return (
@@ -12,28 +13,10 @@ export default function RegisterPage() {
                 <section className="hidden lg:flex">
                     <div className="mx-auto flex w-full max-w-xl flex-col justify-center px-12 xl:px-20">
                         {/* Brand */}
-                       <Link
-                        href="/feed"
-                        className="flex items-center gap-2.5"
-                        aria-label="Infera Home"
-                    >
-                        <Image
-                            src={logo}
-                            alt="Infera Logo"
-                            width={42}
-                            height={42}
-                            priority
-                            quality={100}
-                            className="h-16 w-16 object-contain"
+                        <Logo
+                            asLink={false}
+                            width={160}
                         />
-
-                        <span
-                            className="text-[20px] font-semibold tracking-[-0.04em]"
-                            style={{ color: '#8B1E24' }}
-                        >
-                            INFERA
-                        </span>
-                    </Link>
 
                         {/* Content */}
                         <div className="max-w-lg">
@@ -82,22 +65,13 @@ export default function RegisterPage() {
 
                         {/* Mobile Brand */}
                         <div className="mb-8 flex justify-center lg:hidden">
-                            <Link
-                                href="/"
-                                className="flex items-center gap-2"
-                                aria-label="INFERA"
-                            >
-                                <span className="flex size-10 items-center justify-center rounded-xl bg-foreground">
-                                    <span className="size-2 rounded-full bg-primary" />
-                                </span>
-
-                                <span className="text-2xl font-bold tracking-tight">
-                                    Pulse<span className="text-primary">IQ</span>
-                                </span>
-                            </Link>
+                            <Logo
+                                asLink={false}
+                                width={120}
+                            />
                         </div>
 
-            
+
                         {/* Form */}
                         <RegisterForm />
 

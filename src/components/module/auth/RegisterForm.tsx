@@ -43,7 +43,7 @@ export function RegisterForm() {
                 )}
 
                 {/* Name */}
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-5 sm:grid-cols-1">
                     {/* First Name */}
                     <div className="space-y-2">
                         <Label htmlFor="name">

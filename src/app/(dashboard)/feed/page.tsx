@@ -3,8 +3,8 @@ import { TrendingStories } from "@/components/module/feed/TrendingStories";
 import { YourTopics } from "@/components/module/feed/YourTopics";
 import { getMe } from "@/services/auth/getMe";
 import { getCategories } from "@/services/news/category";
-
 import { getNewsFeed } from "@/services/news/getNewsFeed";
+import { getLatestStories } from "@/services/news/getLatestStories";
 
 interface FeedPageProps {
     searchParams: Promise<{
@@ -19,15 +19,17 @@ export default async function Page({
 
     const category = params.category ?? "foryou";
 
-    const [feedResponse, categoryResponse, user] = await Promise.all([
-        getNewsFeed({
-            category,
-            page: 1,
-            limit: 20,
-        }),
-        getCategories(),
-        getMe()
-    ]);
+    const [feedResponse, categoryResponse, user, latestStories] =
+        await Promise.all([
+            getNewsFeed({
+                category,
+                page: 1,
+                limit: 20,
+            }),
+            getCategories(),
+            getMe(),
+            getLatestStories(),
+        ]);
 
     const feedNews = Array.isArray(feedResponse?.data?.data)
         ? feedResponse.data.data
@@ -48,7 +50,7 @@ export default async function Page({
                 />
 
                 <aside className="sticky top-20 hidden max-h-[calc(100dvh-6rem)] self-start space-y-6 overflow-y-auto overscroll-contain pr-1 lg:block">
-                    <TrendingStories />
+                    <TrendingStories stories={latestStories} />
 
                     <YourTopics />
                 </aside>
